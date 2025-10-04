@@ -1,8 +1,10 @@
 {
-  "name": "brainf_ck-interpreter",
+  "name": "@tktb-tess/brainf_ck-interpreter",
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "license": "MIT",
+  "author": "Tessyrrhaqt",
   "files": [
     "dist"
   ],

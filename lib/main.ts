@@ -8,9 +8,6 @@ const READ_CHAR = 0x2c;
 const LOOP_START = 0x5b;
 const LOOP_END = 0x5d;
 
-type LOOP_START = typeof LOOP_START;
-type LOOP_END = typeof LOOP_END;
-
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -30,12 +27,16 @@ const isCommand = (charCode: number) => {
 export class BFInterpreter {
   #memory: Uint8Array<ArrayBuffer>;
   #ptr: number;
+  readonly #code: Uint8Array<ArrayBuffer>;
+  readonly #loopMap: readonly (readonly [number, number])[];
   static readonly name = 'BFInterPreter';
   readonly [Symbol.toStringTag] = BFInterpreter.name;
 
-  constructor(bufferLength: number = 30000) {
+  constructor(code: string, bufferLength: number = 30000) {
     this.#memory = new Uint8Array(bufferLength);
     this.#ptr = 0;
+    this.#code = encoder.encode(code);
+    this.#loopMap = BFInterpreter.#detectLoopPoints(this.#code);
   }
 
   #show() {
@@ -106,16 +107,14 @@ export class BFInterpreter {
     return map;
   }
 
-  execute(code: string, input: string) {
+  execute(input: string = '') {
     const output: number[] = [];
     const inputBytes = encoder.encode(input);
     let inputPtr = 0;
-    const codeBytes = encoder.encode(code);
     let codePtr = 0;
-    const map = BFInterpreter.#detectLoopPoints(codeBytes);
 
-    loop: while (codePtr < codeBytes.length) {
-      const cmd = codeBytes[codePtr];
+    loop: while (codePtr < this.#code.length) {
+      const cmd = this.#code[codePtr];
 
       // コマンドではないときは全てコメント扱い
       if (!isCommand(cmd)) {
@@ -150,14 +149,18 @@ export class BFInterpreter {
           continue loop;
         }
         case READ_CHAR: {
-          this.#memory[this.#ptr] = inputBytes.at(inputPtr) ?? 0;
+          const input = inputBytes.at(inputPtr);
+          if (input === undefined) {
+            throw Error('input is empty');
+          }
+          this.#memory[this.#ptr] = input;
           ++inputPtr;
           ++codePtr;
           continue loop;
         }
         case LOOP_START: {
           if (this.#show() === 0) {
-            const next = map.find(([i]) => i === codePtr)?.[1];
+            const next = this.#loopMap.find(([i]) => i === codePtr)?.[1];
 
             if (next === undefined) {
               throw Error('no corresponding LOOP_END');
@@ -170,7 +173,7 @@ export class BFInterpreter {
         }
         case LOOP_END: {
           if (this.#show() !== 0) {
-            const next = map.find(([, i]) => i === codePtr)?.[0];
+            const next = this.#loopMap.find(([, i]) => i === codePtr)?.[0];
             if (next === undefined) {
               throw Error('no corresponding LOOP_START');
             }
