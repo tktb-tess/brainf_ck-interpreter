@@ -1,11 +1,19 @@
 // 各命令の文字に対応するASCII(UTF-8)文字コード
+/** `>` */
 const POINTER_INCREMENT = 0x3e;
+/** `<` */
 const POINTER_DECREMENT = 0x3c;
+/** `+` */
 const VALUE_INCREMENT = 0x2b;
+/** `-` */
 const VALUE_DECREMENT = 0x2d;
-const WRITE_CHAR = 0x2e;
-const READ_CHAR = 0x2c;
+/** `.` */
+const WRITE_MEMORY = 0x2e;
+/** `,` */
+const READ_MEMORY = 0x2c;
+/** `[` */
 const LOOP_START = 0x5b;
+/** `]` */
 const LOOP_END = 0x5d;
 
 const encoder = new TextEncoder();
@@ -17,8 +25,8 @@ const isCommand = (charCode: number) => {
     charCode === POINTER_DECREMENT ||
     charCode === VALUE_INCREMENT ||
     charCode === VALUE_DECREMENT ||
-    charCode === WRITE_CHAR ||
-    charCode === READ_CHAR ||
+    charCode === WRITE_MEMORY ||
+    charCode === READ_MEMORY ||
     charCode === LOOP_START ||
     charCode === LOOP_END
   );
@@ -143,12 +151,12 @@ export class BFInterpreter {
           ++codePtr;
           continue loop;
         }
-        case WRITE_CHAR: {
+        case WRITE_MEMORY: {
           output.push(this.#show());
           ++codePtr;
           continue loop;
         }
-        case READ_CHAR: {
+        case READ_MEMORY: {
           const input = inputBytes.at(inputPtr);
           if (input === undefined) {
             throw Error('input is empty');

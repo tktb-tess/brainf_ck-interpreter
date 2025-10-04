@@ -31,8 +31,12 @@ describe('Execute correctly...', () => {
       ---.-----.<.>+++++.+.<.>.------.<.> ++++++.----.<.> ++++.++.<.> -.-----.<.>
       +++++.+.<.>.--.`;
     const intp = new BFInterpreter(code);
-    const output = intp.execute();
-    console.log(output);
+    const output = intp
+      .execute()
+      .split(' ')
+      .map((n) => Number.parseInt(n))
+      .filter((n) => Number.isFinite(n));
+    console.log(...output);
   });
 
   it('square numbers up to 100^2', () => {
@@ -40,7 +44,14 @@ describe('Execute correctly...', () => {
       >>>+[[-]++++++>>>]<<<[[<++++++++<++>>-]+<.<[>----<-]<]
       <<[>>>>>[>>>[-]+++++++++<[>-<-]+++++++++>[-[<->-]+[<<<]]<[>+<-]>]<<-]<<-]`;
     const intp = new BFInterpreter(code);
-    const output = intp.execute();
-    console.log(output);
-  })
+    const output = intp
+      .execute()
+      .split('\n')
+      .map((n) => Number.parseInt(n))
+      .filter((n) => Number.isFinite(n));
+
+    console.log(...output);
+
+    expect(output.every((n, i) => n === i ** 2)).toBe(true);
+  });
 });
