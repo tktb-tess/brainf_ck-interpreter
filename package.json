@@ -14,7 +14,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/node": "^24.6.1",
