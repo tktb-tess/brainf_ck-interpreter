@@ -4,8 +4,12 @@
   "type": "module",
   "license": "MIT",
   "author": "Tessyrrhaqt",
+  "description": "A brainf*ck interpreter written by TypeScript",
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "brainf*ck"
   ],
   "main": "./dist/bundle.js",
   "types": "./dist/main.d.ts",
