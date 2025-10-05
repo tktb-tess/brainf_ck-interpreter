@@ -36,5 +36,10 @@
   "engines": {
     "node": "^22",
     "pnpm": "^10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tktb-tess/brainf_ck-interpreter.git"
+  },
+  "homepage": "https://tktb-tess.github.io/bf-interpreter"
 }
