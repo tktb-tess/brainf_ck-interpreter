@@ -6,8 +6,8 @@ describe('Execute correctly...', () => {
     /** from Wikipedia */
     const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
       ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
-    const interpreter = new BFInterpreter(code);
-    const res = interpreter.execute();
+    const intp = new BFInterpreter(code);
+    const res = intp.execute();
     console.log(res);
     expect(res).toBe('Hello World!\n');
   });
@@ -19,8 +19,8 @@ describe('Execute correctly...', () => {
       <[[-<<+>>]>>>+>+<<<<<<[->>+>+>-<<<<]<]>>[[-]<]>[>>>[>.<<.<<<]<[.<<<<]>]>.<<<<<<
       <<<<<]`;
 
-    const interpreter = new BFInterpreter(code);
-    const res = interpreter.execute();
+    const intp = new BFInterpreter(code);
+    const res = intp.execute();
     console.log(res);
   });
 

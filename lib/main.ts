@@ -56,7 +56,7 @@ export class BFInterpreter {
   }
 
   #increment() {
-    this.#ptr += 1;
+    ++this.#ptr;
 
     if (this.#ptr >= 2 ** 32) {
       throw Error('ptr address is out of range');
@@ -68,11 +68,12 @@ export class BFInterpreter {
       if (newBuffSize >= 2 ** 32) {
         throw Error('memory size exceeds a maximum size');
       }
-      const newMemory = new Uint8Array(newBuffSize);
-      const entries = this.#memory.entries();
 
-      for (const [i, v] of entries) {
-        newMemory[i] = v;
+      const newMemory = new Uint8Array(newBuffSize);
+      const len = this.#memory.length;
+
+      for (let i = 0; i < len; ++i) {
+        newMemory[i] = this.#memory[i];
       }
 
       this.#memory = newMemory;
@@ -83,24 +84,16 @@ export class BFInterpreter {
     if (this.#ptr === 0) {
       return;
     }
-    this.#ptr -= 1;
-  }
-
-  #vIncrement() {
-    this.#memory[this.#ptr]++;
-  }
-
-  #vDecrement() {
-    this.#memory[this.#ptr]--;
+    --this.#ptr;
   }
 
   static #detectLoopPoints(code: Uint8Array) {
     const startIndex: number[] = [];
     const map: (readonly [number, number])[] = [];
+    const len = code.length;
 
-    const entries = code.entries();
-
-    for (const [i, cmd] of entries) {
+    for (let i = 0; i < len; ++i) {
+      const cmd = code[i];
       if (cmd === LOOP_START) {
         startIndex.push(i);
       } else if (cmd === LOOP_END) {
@@ -142,12 +135,12 @@ export class BFInterpreter {
           continue loop;
         }
         case VALUE_INCREMENT: {
-          this.#vIncrement();
+          ++this.#memory[this.#ptr];
           ++codePtr;
           continue loop;
         }
         case VALUE_DECREMENT: {
-          this.#vDecrement();
+          --this.#memory[this.#ptr];
           ++codePtr;
           continue loop;
         }
