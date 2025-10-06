@@ -7,7 +7,7 @@ A brainf\*ck interpreter written by TypeScript
 ```ts
 import { exec } from '@tktb-tess/brainf_ck-interpreter';
 
-// sample that outputs 'Hello World!\n' from wikipedia
+// sample that outputs 'Hello World!\n' from Wikipedia
 const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
   ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
 const output = exec(code);
