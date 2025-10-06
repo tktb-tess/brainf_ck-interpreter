@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { BFInterpreter } from '@tktb-tess/brainf_ck-interpreter';
+import { exec } from '@tktb-tess/brainf_ck-interpreter';
 
 describe('Execute correctly...', () => {
   it('Hello world', () => {
     /** from Wikipedia */
     const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
       ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
-    const intp = new BFInterpreter(code);
-    const output = intp.execute().trim();
+    const output = exec(code).trim();
     console.log(output);
     expect(output).toBe('Hello World!');
   });
@@ -19,8 +18,7 @@ describe('Execute correctly...', () => {
       <[[-<<+>>]>>>+>+<<<<<<[->>+>+>-<<<<]<]>>[[-]<]>[>>>[>.<<.<<<]<[.<<<<]>]>.<<<<<<
       <<<<<]`;
 
-    const intp = new BFInterpreter(code);
-    const output = intp.execute().split('\n').slice(0, -1);
+    const output = exec(code).split('\n').slice(0, -1);
 
     const fizzBuzz = [...Array(100)].map((_, _i) => {
       const i = _i + 1;
@@ -45,9 +43,8 @@ describe('Execute correctly...', () => {
       ------.--.<.>++.++++.<.>---.---.<.> +++.-.<.>+.+++.<.>--.--.<.> ++.++++.<.>
       ---.-----.<.>+++++.+.<.>.------.<.> ++++++.----.<.> ++++.++.<.> -.-----.<.>
       +++++.+.<.>.--.`;
-    const intp = new BFInterpreter(code);
-    const output = intp
-      .execute()
+
+    const output = exec(code)
       .split(' ')
       .map((n) => Number.parseInt(n));
     const v_ = [...Array(99)]
@@ -63,9 +60,8 @@ describe('Execute correctly...', () => {
     const code = `++++[>+++++<-]>[<+++++>-]+<+[>[>+>+<<-]++>>[<<+>>-]>>>[-]++>[-]+
       >>>+[[-]++++++>>>]<<<[[<++++++++<++>>-]+<.<[>----<-]<]
       <<[>>>>>[>>>[-]+++++++++<[>-<-]+++++++++>[-[<->-]+[<<<]]<[>+<-]>]<<-]<<-]`;
-    const intp = new BFInterpreter(code);
-    const output = intp
-      .execute()
+
+    const output = exec(code)
       .split('\n')
       .map((n) => Number.parseInt(n))
       .filter((n) => Number.isFinite(n));

@@ -32,22 +32,16 @@ const isCommand = (charCode: number) => {
   );
 };
 
-export class BFInterpreter {
+class BFMemory {
   #memory: Uint8Array<ArrayBuffer>;
   #ptr: number;
-  readonly #code: Uint8Array<ArrayBuffer>;
-  readonly #loopMap: readonly (readonly [number, number])[];
-  static readonly name = 'BFInterPreter';
-  readonly [Symbol.toStringTag] = BFInterpreter.name;
 
-  constructor(code: string, bufferLength: number = 30000) {
+  constructor(bufferLength: number) {
     this.#memory = new Uint8Array(bufferLength);
     this.#ptr = 0;
-    this.#code = encoder.encode(code);
-    this.#loopMap = BFInterpreter.#detectLoopPoints(this.#code);
   }
 
-  #show() {
+  get current() {
     const v = this.#memory.at(this.#ptr);
     if (v === undefined) {
       throw Error('referenced memory is out of range');
@@ -55,7 +49,32 @@ export class BFInterpreter {
     return v;
   }
 
-  #increment() {
+  set current(n) {
+    if (this.#memory[this.#ptr] === undefined) {
+      throw Error('referenced memory is out of range');
+    }
+    this.#memory[this.#ptr] = n;
+  }
+
+  reAlloc(newBuffSize: number) {
+    if (newBuffSize < this.#memory.length) {
+      throw Error('new buffer size is smaller than current buffer size');
+    }
+    if (newBuffSize >= 2 ** 32) {
+      throw Error('memory size exceeds a maximum size');
+    }
+
+    const newMemory = new Uint8Array(newBuffSize);
+    const len = this.#memory.length;
+
+    for (let i = 0; i < len; ++i) {
+      newMemory[i] = this.#memory[i];
+    }
+
+    this.#memory = newMemory;
+  }
+
+  increment() {
     ++this.#ptr;
 
     if (this.#ptr >= 2 ** 32) {
@@ -65,131 +84,136 @@ export class BFInterpreter {
     if (this.#ptr >= this.#memory.length) {
       const newBuffSize = this.#memory.length * 2;
 
-      if (newBuffSize >= 2 ** 32) {
-        throw Error('memory size exceeds a maximum size');
-      }
-
-      const newMemory = new Uint8Array(newBuffSize);
-      const len = this.#memory.length;
-
-      for (let i = 0; i < len; ++i) {
-        newMemory[i] = this.#memory[i];
-      }
-
-      this.#memory = newMemory;
+      this.reAlloc(newBuffSize);
     }
   }
 
-  #decrement() {
+  decrement() {
     if (this.#ptr === 0) {
       return;
     }
     --this.#ptr;
   }
 
-  static #detectLoopPoints(code: Uint8Array) {
-    const startIndex: number[] = [];
-    const map: (readonly [number, number])[] = [];
-    const len = code.length;
-
-    for (let i = 0; i < len; ++i) {
-      const cmd = code[i];
-      if (cmd === LOOP_START) {
-        startIndex.push(i);
-      } else if (cmd === LOOP_END) {
-        const j = startIndex.pop();
-        if (!j) {
-          throw Error(`lone LOOP_END`);
-        }
-        map.push([j, i]);
-      }
-    }
-
-    return map;
+  vIncrement() {
+    ++this.#memory[this.#ptr];
   }
 
-  execute(input: string = '') {
-    const output: number[] = [];
-    const inputBytes = encoder.encode(input);
-    let inputPtr = 0;
-    let codePtr = 0;
+  vDecrement() {
+    --this.#memory[this.#ptr];
+  }
+}
 
-    loop: while (codePtr < this.#code.length) {
-      const cmd = this.#code[codePtr];
+const detectLoopPoints = (code: Uint8Array<ArrayBuffer>) => {
+  const startIndex: number[] = [];
+  const map: (readonly [number, number])[] = [];
+  const len = code.length;
 
-      // コマンドではないときは全てコメント扱い
-      if (!isCommand(cmd)) {
+  for (let i = 0; i < len; ++i) {
+    const cmd = code[i];
+    if (cmd === LOOP_START) {
+      startIndex.push(i);
+    } else if (cmd === LOOP_END) {
+      const j = startIndex.pop();
+      if (!j) {
+        throw Error(`lone LOOP_END`);
+      }
+      map.push([j, i]);
+    }
+  }
+
+  return map;
+};
+
+export const exec = (
+  code: string,
+  options?: { input?: string; initBuffLength?: number }
+) => {
+  const input = options?.input ?? '';
+  const initBuffLength = options?.initBuffLength ?? 30000;
+  const bfMemory = new BFMemory(initBuffLength);
+  const output: number[] = [];
+  const inputBytes = encoder.encode(input);
+  let inputPtr = 0;
+  const codeBytes = encoder.encode(code);
+  let codePtr = 0;
+  const loopMap = detectLoopPoints(codeBytes);
+
+  loop: while (codePtr < codeBytes.length) {
+    const cmd = codeBytes[codePtr];
+
+    // コマンドではないときは全てコメント扱い
+    if (!isCommand(cmd)) {
+      ++codePtr;
+      continue loop;
+    }
+
+    switch (cmd) {
+      case POINTER_INCREMENT: {
+        bfMemory.increment();
         ++codePtr;
         continue loop;
       }
+      case POINTER_DECREMENT: {
+        bfMemory.decrement();
+        ++codePtr;
+        continue loop;
+      }
+      case VALUE_INCREMENT: {
+        bfMemory.vIncrement();
+        ++codePtr;
+        continue loop;
+      }
+      case VALUE_DECREMENT: {
+        bfMemory.vDecrement();
+        ++codePtr;
+        continue loop;
+      }
+      case WRITE_MEMORY: {
+        output.push(bfMemory.current);
+        ++codePtr;
+        continue loop;
+      }
+      case READ_MEMORY: {
+        const input = inputBytes.at(inputPtr);
+        if (input === undefined) {
+          throw Error('input is empty');
+        }
+        bfMemory.current = input;
+        ++inputPtr;
+        ++codePtr;
+        continue loop;
+      }
+      case LOOP_START: {
+        if (bfMemory.current === 0) {
+          const next = loopMap.find(([i]) => i === codePtr)?.[1];
 
-      switch (cmd) {
-        case POINTER_INCREMENT: {
-          this.#increment();
-          ++codePtr;
-          continue loop;
-        }
-        case POINTER_DECREMENT: {
-          this.#decrement();
-          ++codePtr;
-          continue loop;
-        }
-        case VALUE_INCREMENT: {
-          ++this.#memory[this.#ptr];
-          ++codePtr;
-          continue loop;
-        }
-        case VALUE_DECREMENT: {
-          --this.#memory[this.#ptr];
-          ++codePtr;
-          continue loop;
-        }
-        case WRITE_MEMORY: {
-          output.push(this.#show());
-          ++codePtr;
-          continue loop;
-        }
-        case READ_MEMORY: {
-          const input = inputBytes.at(inputPtr);
-          if (input === undefined) {
-            throw Error('input is empty');
+          if (next === undefined) {
+            throw Error('no corresponding LOOP_END');
           }
-          this.#memory[this.#ptr] = input;
-          ++inputPtr;
+          codePtr = next + 1;
+        } else {
           ++codePtr;
-          continue loop;
         }
-        case LOOP_START: {
-          if (this.#show() === 0) {
-            const next = this.#loopMap.find(([i]) => i === codePtr)?.[1];
-
-            if (next === undefined) {
-              throw Error('no corresponding LOOP_END');
-            }
-            codePtr = next + 1;
-          } else {
-            ++codePtr;
+        continue loop;
+      }
+      case LOOP_END: {
+        if (bfMemory.current !== 0) {
+          const next = loopMap.find(([, i]) => i === codePtr)?.[0];
+          if (next === undefined) {
+            throw Error('no corresponding LOOP_START');
           }
-          continue loop;
+          codePtr = next + 1;
+        } else {
+          ++codePtr;
         }
-        case LOOP_END: {
-          if (this.#show() !== 0) {
-            const next = this.#loopMap.find(([, i]) => i === codePtr)?.[0];
-            if (next === undefined) {
-              throw Error('no corresponding LOOP_START');
-            }
-            codePtr = next + 1;
-          } else {
-            ++codePtr;
-          }
-          continue loop;
-        }
-        default: {
-          throw Error('unexpected error');
-        }
+        continue loop;
+      }
+      default: {
+        throw Error('unexpected error');
       }
     }
-
-    return decoder.decode(Uint8Array.from(output));
   }
-}
+
+  return decoder.decode(Uint8Array.from(output));
+};
