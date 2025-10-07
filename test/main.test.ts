@@ -7,7 +7,7 @@ describe('Execute correctly...', () => {
     const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
       ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
     const output = exec(code).trim();
-    console.log(output);
+    // console.log(output);
     expect(output).toBe('Hello World!');
   });
 
@@ -33,7 +33,7 @@ describe('Execute correctly...', () => {
         return i.toString();
       }
     });
-    console.log(...output);
+    // console.log(...output);
     expect(output).toStrictEqual(fizzBuzz);
   });
 
@@ -52,7 +52,7 @@ describe('Execute correctly...', () => {
       .filter((n) => n % 2 && n % 3 && n % 5 && n % 7);
 
     const verif = [2, 3, 5, 7, ...v_];
-    console.log(...output);
+    // console.log(...output);
     expect(output).toStrictEqual(verif);
   });
 
@@ -66,7 +66,7 @@ describe('Execute correctly...', () => {
       .map((n) => Number.parseInt(n))
       .filter((n) => Number.isFinite(n));
 
-    console.log(...output);
+    // console.log(...output);
 
     expect(output.every((n, i) => n === i ** 2)).toBe(true);
   });
