@@ -10,6 +10,7 @@ import {
   LOOP_START,
   LOOP_END,
 } from './commands';
+import { BFRuntimeError } from './error';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -49,7 +50,13 @@ export const exec = (
   let codePtr = 0;
   const loopMap = detectLoopPoints(codeBytes);
 
+  let counter = 0;
+  const LIMIT = 2 ** 28;
   loop: while (codePtr < codeBytes.length) {
+    ++counter;
+    if (counter > LIMIT) {
+      throw new BFRuntimeError('loop count exceeded limit', output);
+    }
     const cmd = codeBytes[codePtr];
 
     // コマンドではないときは全てコメント扱い
@@ -61,31 +68,37 @@ export const exec = (
     switch (cmd) {
       case POINTER_INCREMENT: {
         bfMemory.increment();
+
         ++codePtr;
         continue loop;
       }
       case POINTER_DECREMENT: {
         bfMemory.decrement();
+
         ++codePtr;
         continue loop;
       }
       case VALUE_INCREMENT: {
         bfMemory.vIncrement();
+
         ++codePtr;
         continue loop;
       }
       case VALUE_DECREMENT: {
         bfMemory.vDecrement();
+
         ++codePtr;
         continue loop;
       }
       case WRITE_MEMORY: {
         output.push(bfMemory.current);
+
         ++codePtr;
         continue loop;
       }
       case READ_MEMORY: {
         const input = inputBytes.at(inputPtr);
+
         if (input === undefined) {
           throw Error('input is empty');
         }
@@ -110,6 +123,7 @@ export const exec = (
       case LOOP_END: {
         if (bfMemory.current !== 0) {
           const next = loopMap.find(([, i]) => i === codePtr)?.[0];
+
           if (next === undefined) {
             throw Error('no corresponding LOOP_START');
           }

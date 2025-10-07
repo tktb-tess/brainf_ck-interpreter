@@ -1,3 +1,5 @@
+import { BFRuntimeError } from './error';
+
 export class BFMemory {
   #memory: Uint8Array<ArrayBuffer>;
   #ptr: number;
@@ -17,17 +19,17 @@ export class BFMemory {
 
   set current(n) {
     if (this.#memory[this.#ptr] === undefined) {
-      throw Error('referenced memory is out of range');
+      throw new BFRuntimeError('referenced memory is out of range', this.#ptr);
     }
     this.#memory[this.#ptr] = n;
   }
 
   reAlloc(newBuffSize: number) {
     if (newBuffSize < this.#memory.length) {
-      throw Error('new buffer size is smaller than current buffer size');
+      throw new BFRuntimeError('new buffer size is smaller than current buffer size', newBuffSize);
     }
     if (newBuffSize >= 2 ** 32) {
-      throw Error('memory size exceeds a maximum size');
+      throw new BFRuntimeError('memory size exceeds a maximum size', newBuffSize);
     }
 
     const newMemory = new Uint8Array(newBuffSize);
@@ -44,7 +46,7 @@ export class BFMemory {
     ++this.#ptr;
 
     if (this.#ptr >= 2 ** 32) {
-      throw Error('ptr address is out of range');
+      throw new BFRuntimeError('ptr address is out of range', this.#ptr);
     }
 
     if (this.#ptr >= this.#memory.length) {

@@ -71,3 +71,9 @@ describe('Execute correctly...', () => {
     expect(output.every((n, i) => n === i ** 2)).toBe(true);
   });
 });
+
+it('avoid infinite loop', () => {
+  const code = '+[><]';
+
+  expect(() => exec(code)).toThrowError(/exceeded/);
+});
