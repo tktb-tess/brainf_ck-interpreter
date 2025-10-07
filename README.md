@@ -1,13 +1,14 @@
 # Brainf\*ck Interpreter
 
-A brainf\*ck interpreter written by TypeScript
+A simple brainf\*ck interpreter written by TypeScript
 
 ## Usage
 
 ```ts
 import { exec } from '@tktb-tess/brainf_ck-interpreter';
 
-// sample that outputs 'Hello World!\n' from Wikipedia
+// code sample that outputs 'Hello World!\n'
+// source from Wikipedia
 const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
   ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
 const output = exec(code);

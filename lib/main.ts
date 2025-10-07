@@ -1,108 +1,18 @@
-// 各命令の文字に対応するASCII(UTF-8)文字コード
-/** `>` */
-const POINTER_INCREMENT = 0x3e;
-/** `<` */
-const POINTER_DECREMENT = 0x3c;
-/** `+` */
-const VALUE_INCREMENT = 0x2b;
-/** `-` */
-const VALUE_DECREMENT = 0x2d;
-/** `.` */
-const WRITE_MEMORY = 0x2e;
-/** `,` */
-const READ_MEMORY = 0x2c;
-/** `[` */
-const LOOP_START = 0x5b;
-/** `]` */
-const LOOP_END = 0x5d;
+import { BFMemory } from './bf-memory';
+import {
+  isCommand,
+  POINTER_INCREMENT,
+  POINTER_DECREMENT,
+  VALUE_INCREMENT,
+  VALUE_DECREMENT,
+  READ_MEMORY,
+  WRITE_MEMORY,
+  LOOP_START,
+  LOOP_END,
+} from './commands';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-
-const isCommand = (charCode: number) => {
-  return (
-    charCode === POINTER_INCREMENT ||
-    charCode === POINTER_DECREMENT ||
-    charCode === VALUE_INCREMENT ||
-    charCode === VALUE_DECREMENT ||
-    charCode === WRITE_MEMORY ||
-    charCode === READ_MEMORY ||
-    charCode === LOOP_START ||
-    charCode === LOOP_END
-  );
-};
-
-class BFMemory {
-  #memory: Uint8Array<ArrayBuffer>;
-  #ptr: number;
-
-  constructor(bufferLength: number) {
-    this.#memory = new Uint8Array(bufferLength);
-    this.#ptr = 0;
-  }
-
-  get current() {
-    const v = this.#memory.at(this.#ptr);
-    if (v === undefined) {
-      throw Error('referenced memory is out of range');
-    }
-    return v;
-  }
-
-  set current(n) {
-    if (this.#memory[this.#ptr] === undefined) {
-      throw Error('referenced memory is out of range');
-    }
-    this.#memory[this.#ptr] = n;
-  }
-
-  reAlloc(newBuffSize: number) {
-    if (newBuffSize < this.#memory.length) {
-      throw Error('new buffer size is smaller than current buffer size');
-    }
-    if (newBuffSize >= 2 ** 32) {
-      throw Error('memory size exceeds a maximum size');
-    }
-
-    const newMemory = new Uint8Array(newBuffSize);
-    const len = this.#memory.length;
-
-    for (let i = 0; i < len; ++i) {
-      newMemory[i] = this.#memory[i];
-    }
-
-    this.#memory = newMemory;
-  }
-
-  increment() {
-    ++this.#ptr;
-
-    if (this.#ptr >= 2 ** 32) {
-      throw Error('ptr address is out of range');
-    }
-
-    if (this.#ptr >= this.#memory.length) {
-      const newBuffSize = this.#memory.length * 2;
-
-      this.reAlloc(newBuffSize);
-    }
-  }
-
-  decrement() {
-    if (this.#ptr === 0) {
-      return;
-    }
-    --this.#ptr;
-  }
-
-  vIncrement() {
-    ++this.#memory[this.#ptr];
-  }
-
-  vDecrement() {
-    --this.#memory[this.#ptr];
-  }
-}
 
 const detectLoopPoints = (code: Uint8Array<ArrayBuffer>) => {
   const startIndex: number[] = [];
