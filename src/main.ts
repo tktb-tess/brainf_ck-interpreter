@@ -1,3 +1,6 @@
-const app = document.getElementById('app') as HTMLDivElement;
+import { exec } from '@tktb-tess/brainf_ck-interpreter';
 
-app.innerHTML = `<p>Hello!</p>`;
+const app = document.getElementById('app')!;
+const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.`;
+
+app.innerHTML = `<p>${exec(code)}</p>`;
