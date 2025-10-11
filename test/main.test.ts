@@ -88,5 +88,3 @@ it('avoid infinite loop', () => {
 
   expect(() => exec(code)).toThrowError(/exceeded/);
 });
-
-

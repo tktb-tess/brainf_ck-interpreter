@@ -26,10 +26,16 @@ export class BFMemory {
 
   reAlloc(newBuffSize: number) {
     if (newBuffSize < this.#memory.length) {
-      throw new BFRuntimeError('new buffer size is smaller than current buffer size', newBuffSize);
+      throw new BFRuntimeError(
+        'new buffer size is smaller than current buffer size',
+        newBuffSize
+      );
     }
     if (newBuffSize >= 2 ** 32) {
-      throw new BFRuntimeError('memory size exceeds a maximum size', newBuffSize);
+      throw new BFRuntimeError(
+        'memory size exceeds a maximum size',
+        newBuffSize
+      );
     }
 
     const newMemory = new Uint8Array(newBuffSize);

@@ -28,4 +28,3 @@ export const isCommand = (charCode: number) => {
     charCode === LOOP_END
   );
 };
-
