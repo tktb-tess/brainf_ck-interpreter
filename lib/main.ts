@@ -11,11 +11,26 @@ import {
   LOOP_END,
 } from './commands';
 import { BFRuntimeError } from './error';
+export {
+  BFMemory,
+  BFRuntimeError,
+  isCommand,
+  POINTER_INCREMENT,
+  POINTER_DECREMENT,
+  VALUE_INCREMENT,
+  VALUE_DECREMENT,
+  READ_MEMORY,
+  WRITE_MEMORY,
+  LOOP_START,
+  LOOP_END,
+};
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-const detectLoopPoints = (code: Uint8Array<ArrayBuffer>) => {
+const detectLoopPoints = (
+  code: Uint8Array<ArrayBuffer>
+): readonly (readonly [number, number])[] => {
   const startIndex: number[] = [];
   const map: (readonly [number, number])[] = [];
   const len = code.length;

@@ -12,6 +12,7 @@ describe('Execute correctly...', () => {
   });
 
   it('FizzBuzz', () => {
+    /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `++++++[->++++>>+>+>-<<<<<]>[<++++>>+++>++++>>+++>+++++>+++++>>>>>>
       ++>>++<<<<<<<<<<<<<<-]<++++>+++>-->+++>->>--->++>>>+++++[->++>++<<]<<<<<<<<<<[
       ->-[>>>>>>>]>[<+++>.>.>>>>..>>>+<]<<<<<-[>>>>]>[<+++++>.>.>..>>>+<]>>>>+<-[<<<]
@@ -38,6 +39,7 @@ describe('Execute correctly...', () => {
   });
 
   it('primes up to 100', () => {
+    /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `>++++[<++++++++>-]>++++++++[<++++++>-]<++.<.>+.<.>++.<.>++.<.>------..<.>
       .++.<.>--.++++++.<.>------.>+++[<+++>-]<-.<.>-------.+.<.> -.+++++++.<.>
       ------.--.<.>++.++++.<.>---.---.<.> +++.-.<.>+.+++.<.>--.--.<.> ++.++++.<.>
@@ -57,6 +59,7 @@ describe('Execute correctly...', () => {
   });
 
   it('square numbers up to 100^2', () => {
+    /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `++++[>+++++<-]>[<+++++>-]+<+[>[>+>+<<-]++>>[<<+>>-]>>>[-]++>[-]+
       >>>+[[-]++++++>>>]<<<[[<++++++++<++>>-]+<.<[>----<-]<]
       <<[>>>>>[>>>[-]+++++++++<[>-<-]+++++++++>[-[<->-]+[<<<]]<[>+<-]>]<<-]<<-]`;
@@ -70,6 +73,14 @@ describe('Execute correctly...', () => {
 
     expect(output.every((n, i) => n === i ** 2)).toBe(true);
   });
+
+  it('inversed echo', () => {
+    /** from https://qiita.com/kinumiya_norihito/items/45bdeb71955b208dc159 */
+    const code = `-[+>,----------]<[+++++++++.<]++++++++++.`;
+    const input = 'Hello!\n';
+    const output = exec(code, { input });
+    expect(output).toBe('!olleH\n');
+  });
 });
 
 it('avoid infinite loop', () => {
@@ -77,3 +88,5 @@ it('avoid infinite loop', () => {
 
   expect(() => exec(code)).toThrowError(/exceeded/);
 });
+
+
