@@ -57,7 +57,6 @@ export class BFMemory {
 
     if (this.#ptr >= this.#memory.length) {
       const newBuffSize = this.#memory.length * 2;
-
       this.reAlloc(newBuffSize);
     }
   }
