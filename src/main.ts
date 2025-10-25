@@ -1,6 +1,15 @@
-import { exec } from '@tktb-tess/brainf_ck-interpreter';
+import * as U from '../lib/main';
 
-const app = document.getElementById('app')!;
-const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.`;
+const o = { ...U };
 
-app.innerHTML = `<p>${exec(code)}</p>`;
+Object.setPrototypeOf(o, null);
+Object.freeze(o);
+
+Object.defineProperty(globalThis, '__bf_interpreter', {
+  value: o,
+  enumerable: true,
+});
+
+const app = document.getElementById('app') as HTMLDivElement;
+
+app.textContent = `Press F12 to open devtools console`;
