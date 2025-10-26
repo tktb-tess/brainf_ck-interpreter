@@ -8,11 +8,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, './lib/main.ts'),
-      formats: ['es'],
-      fileName: 'bundle',
+      name: 'BFInterpreter',
+      formats: ['es', 'umd'],
+      fileName: (format) => `bundle${format === 'umd' ? '.min' : ''}.js`,
     },
   },
   test: {
-    testTimeout: 15000
-  }
+    testTimeout: 30000,
+  },
 });

@@ -12,10 +12,13 @@
     "brainf*ck"
   ],
   "main": "./dist/bundle.js",
+  "browser": "./dist/bundle.min.js",
+  "module": "./dist/bundle.js",
   "types": "./dist/main.d.ts",
   "exports": {
     "types": "./dist/main.d.ts",
-    "import": "./dist/bundle.js"
+    "import": "./dist/bundle.js",
+    "require": null
   },
   "scripts": {
     "dev": "vite",

@@ -8,9 +8,9 @@ export const VALUE_INCREMENT = 0x2b;
 /** `-` */
 export const VALUE_DECREMENT = 0x2d;
 /** `.` */
-export const WRITE_MEMORY = 0x2e;
+export const READ_MEMORY = 0x2e;
 /** `,` */
-export const READ_MEMORY = 0x2c;
+export const WRITE_MEMORY = 0x2c;
 /** `[` */
 export const LOOP_START = 0x5b;
 /** `]` */
@@ -22,8 +22,8 @@ export const isCommand = (charCode: number) => {
     charCode === POINTER_DECREMENT ||
     charCode === VALUE_INCREMENT ||
     charCode === VALUE_DECREMENT ||
-    charCode === WRITE_MEMORY ||
     charCode === READ_MEMORY ||
+    charCode === WRITE_MEMORY ||
     charCode === LOOP_START ||
     charCode === LOOP_END
   );

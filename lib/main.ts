@@ -5,8 +5,8 @@ import {
   POINTER_DECREMENT,
   VALUE_INCREMENT,
   VALUE_DECREMENT,
-  READ_MEMORY,
   WRITE_MEMORY,
+  READ_MEMORY,
   LOOP_START,
   LOOP_END,
 } from './commands';
@@ -19,8 +19,8 @@ export {
   POINTER_DECREMENT,
   VALUE_INCREMENT,
   VALUE_DECREMENT,
-  READ_MEMORY,
   WRITE_MEMORY,
+  READ_MEMORY,
   LOOP_START,
   LOOP_END,
 };
@@ -42,7 +42,7 @@ const detectLoopPoints = (
     } else if (cmd === LOOP_END) {
       const j = startIndex.pop();
       if (!j) {
-        throw Error(`lone LOOP_END`);
+        throw new BFRuntimeError(`lone LOOP_END`, i);
       }
       map.push([j, i]);
     }
@@ -65,7 +65,7 @@ export const exec = (
   let codePtr = 0;
   const loopMap = detectLoopPoints(codeBytes);
 
-  let counter = 0;
+  let counter = -1;
   const LIMIT = 2 ** 28;
   loop: while (codePtr < codeBytes.length) {
     ++counter;
@@ -105,13 +105,13 @@ export const exec = (
         ++codePtr;
         continue loop;
       }
-      case WRITE_MEMORY: {
+      case READ_MEMORY: {
         output.push(bfMemory.current);
 
         ++codePtr;
         continue loop;
       }
-      case READ_MEMORY: {
+      case WRITE_MEMORY: {
         const input = inputBytes.at(inputPtr);
 
         if (input === undefined) {
@@ -124,12 +124,12 @@ export const exec = (
       }
       case LOOP_START: {
         if (bfMemory.current === 0) {
-          const next = loopMap.find(([i]) => i === codePtr)?.[1];
+          const end = loopMap.find(([i]) => i === codePtr)?.[1];
 
-          if (next === undefined) {
+          if (end === undefined) {
             throw Error('no corresponding LOOP_END');
           }
-          codePtr = next + 1;
+          codePtr = end + 1;
         } else {
           ++codePtr;
         }
@@ -137,12 +137,12 @@ export const exec = (
       }
       case LOOP_END: {
         if (bfMemory.current !== 0) {
-          const next = loopMap.find(([, i]) => i === codePtr)?.[0];
+          const start = loopMap.find(([, i]) => i === codePtr)?.[0];
 
-          if (next === undefined) {
+          if (start === undefined) {
             throw Error('no corresponding LOOP_START');
           }
-          codePtr = next + 1;
+          codePtr = start + 1;
         } else {
           ++codePtr;
         }
@@ -152,6 +152,7 @@ export const exec = (
         throw Error('unexpected error');
       }
     }
+    
   }
 
   return decoder.decode(Uint8Array.from(output));
