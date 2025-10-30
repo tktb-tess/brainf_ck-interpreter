@@ -1,12 +1,24 @@
 import * as U from '../lib/main';
 
-const o = { ...U };
+const name = 'BFInterpreter';
 
-Object.setPrototypeOf(o, null);
-Object.freeze(o);
+const mod = { ...U };
+const proto = Object.create(null) as object;
 
-Object.defineProperty(globalThis, '__bf_interpreter', {
-  value: o,
+Object.defineProperty(proto, Symbol.toStringTag, {
+  value: name,
+});
+
+Object.setPrototypeOf(mod, proto);
+Object.freeze(mod);
+
+Object.defineProperty(window, name, {
+  value: mod,
+  enumerable: true,
+});
+
+Object.defineProperty(window, 'getObjectTag', {
+  value: (obj: unknown) => Object.prototype.toString.call(obj),
   enumerable: true,
 });
 

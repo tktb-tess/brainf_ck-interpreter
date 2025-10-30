@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import dts from 'vite-plugin-dts';
@@ -9,9 +9,12 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, './lib/main.ts'),
       name: 'BFInterpreter',
-      formats: ['es', 'umd'],
-      fileName: (format) => `bundle${format === 'umd' ? '.min' : ''}.js`,
+      formats: ['es', 'iife'],
+      fileName: (format) => (format === 'iife' ? 'bundle.min.js' : 'bundle.js'),
     },
+  },
+  worker: {
+    format: 'iife',
   },
   test: {
     testTimeout: 30000,
