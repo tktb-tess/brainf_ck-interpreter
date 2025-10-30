@@ -1,6 +1,6 @@
 export { BFRuntimeError } from './error';
 export { BFMemory } from './/bf-memory';
-export { execSync } from './exec';
+export { exec } from './exec';
 import AsyncWorker from '@tktb-tess/async-worker';
 
 const worker = new Worker(new URL('./worker.ts', import.meta.url), {
@@ -15,7 +15,15 @@ const aWorker = new AsyncWorker<
   string
 >(worker);
 
-export const exec = async (
+
+/**
+ * **Only available in browser** \
+ * `node:worker_threads` version is coming soon ...
+ * @param code 
+ * @param options 
+ * @returns 
+ */
+export const execWithWorker = async (
   code: string,
   options: { input?: string; initBuffLength?: number } = {}
 ) => {

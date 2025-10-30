@@ -38,7 +38,7 @@ const detectLoopPoints = (
   return map;
 };
 
-export const execSync = (
+export const exec = (
   code: string,
   options: { input?: string; initBuffLength?: number } = {}
 ) => {

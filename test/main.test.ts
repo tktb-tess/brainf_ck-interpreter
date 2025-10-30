@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { exec } from '../lib/main';
 
 describe('Execute correctly...', () => {
-  it('Hello world', () => {
+  it('Hello world', async () => {
     /** from Wikipedia */
     const code = `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
       ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`;
@@ -11,7 +11,7 @@ describe('Execute correctly...', () => {
     expect(output).toBe('Hello World!');
   });
 
-  it('FizzBuzz', () => {
+  it('FizzBuzz', async () => {
     /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `++++++[->++++>>+>+>-<<<<<]>[<++++>>+++>++++>>+++>+++++>+++++>>>>>>
       ++>>++<<<<<<<<<<<<<<-]<++++>+++>-->+++>->>--->++>>>+++++[->++>++<<]<<<<<<<<<<[
@@ -38,7 +38,7 @@ describe('Execute correctly...', () => {
     expect(output).toStrictEqual(fizzBuzz);
   });
 
-  it('primes up to 100', () => {
+  it('primes up to 100', async () => {
     /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `>++++[<++++++++>-]>++++++++[<++++++>-]<++.<.>+.<.>++.<.>++.<.>------..<.>
       .++.<.>--.++++++.<.>------.>+++[<+++>-]<-.<.>-------.+.<.>-.+++++++.<.>
@@ -58,7 +58,7 @@ describe('Execute correctly...', () => {
     expect(output).toStrictEqual(verif);
   });
 
-  it('square numbers up to 100^2', () => {
+  it('square numbers up to 100^2', async () => {
     /** from https://hirlab.net/nblog/category/programming/art_1604/ */
     const code = `++++[>+++++<-]>[<+++++>-]+<+[>[>+>+<<-]++>>[<<+>>-]>>>[-]++>[-]+
       >>>+[[-]++++++>>>]<<<[[<++++++++<++>>-]+<.<[>----<-]<]
@@ -74,7 +74,7 @@ describe('Execute correctly...', () => {
     expect(output.every((n, i) => n === i ** 2)).toBe(true);
   });
 
-  it('inversed echo', () => {
+  it('inversed echo', async () => {
     /** from https://qiita.com/kinumiya_norihito/items/45bdeb71955b208dc159 */
     const code = `-[+>,----------]<[+++++++++.<]++++++++++.`;
     const input = 'Hello!\n';
@@ -83,7 +83,7 @@ describe('Execute correctly...', () => {
   });
 });
 
-it('avoid infinite loop', () => {
+it('avoid infinite loop', async () => {
   const code = '+[><]';
 
   expect(() => exec(code)).toThrowError(/exceeded/);
