@@ -17,11 +17,6 @@ Object.defineProperty(window, name, {
   enumerable: true,
 });
 
-Object.defineProperty(window, 'getObjectTag', {
-  value: (obj: unknown) => Object.prototype.toString.call(obj),
-  enumerable: true,
-});
-
 const app = document.getElementById('app') as HTMLDivElement;
 
 app.textContent = `Press F12 to open devtools console`;

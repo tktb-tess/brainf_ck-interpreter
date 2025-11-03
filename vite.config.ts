@@ -13,9 +13,6 @@ export default defineConfig({
       fileName: (format) => (format === 'iife' ? 'bundle.min.js' : 'bundle.js'),
     },
   },
-  worker: {
-    format: 'iife',
-  },
   test: {
     testTimeout: 30000,
   },
