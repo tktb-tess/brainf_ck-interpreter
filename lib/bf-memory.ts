@@ -12,7 +12,7 @@ export class BFMemory {
   get current() {
     const v = this.#memory.at(this.#ptr);
     if (v === undefined) {
-      throw Error('referenced memory is out of range');
+      throw new BFRuntimeError('referenced memory is out of range', this.#ptr);
     }
     return v;
   }
@@ -33,18 +33,11 @@ export class BFMemory {
       );
     }
     if (newBuffSize >= 2 ** 32) {
-      throw new BFRuntimeError(
-        'buffer size exceeded limit',
-        newBuffSize
-      );
+      throw new BFRuntimeError('buffer size exceeded limit', newBuffSize);
     }
 
     const newMemory = new Uint8Array(newBuffSize);
-
-    for (let i = 0; i < len; ++i) {
-      newMemory[i] = this.#memory[i];
-    }
-
+    newMemory.set(this.#memory);
     this.#memory = newMemory;
   }
 
