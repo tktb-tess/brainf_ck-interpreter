@@ -1,10 +1,16 @@
 import { BFRuntimeError } from './error';
 
+const _name = 'BFMemory';
+
 export class BFMemory {
   #memory: Uint8Array<ArrayBuffer>;
   #ptr: number;
 
-  static readonly name = 'BFMemory';
+  static readonly name = _name;
+
+  get [Symbol.toStringTag](): 'BFMemory' {
+    return _name;
+  }
 
   constructor(bufferLength: number) {
     this.#memory = new Uint8Array(bufferLength);
@@ -71,7 +77,3 @@ export class BFMemory {
     --this.#memory[this.#ptr];
   }
 }
-
-Object.defineProperty(BFMemory.prototype, Symbol.toStringTag, {
-  value: BFMemory.name,
-});
