@@ -4,6 +4,8 @@ export class BFMemory {
   #memory: Uint8Array<ArrayBuffer>;
   #ptr: number;
 
+  static readonly name = 'BFMemory';
+
   constructor(bufferLength: number) {
     this.#memory = new Uint8Array(bufferLength);
     this.#ptr = 0;
@@ -69,3 +71,7 @@ export class BFMemory {
     --this.#memory[this.#ptr];
   }
 }
+
+Object.defineProperty(BFMemory.prototype, Symbol.toStringTag, {
+  value: BFMemory.name,
+});

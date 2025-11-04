@@ -6,12 +6,20 @@ interface BFRuntimeError extends Error {
 
 class BFRuntimeError extends Error {
   static override readonly name = 'BFRuntimeError';
-  override readonly name = BFRuntimeError.name;
-  readonly [Symbol.toStringTag] = BFRuntimeError.name;
 
   constructor(message: string, cause?: unknown) {
     super(message, { cause });
   }
 }
+
+Object.defineProperties(BFRuntimeError.prototype, {
+  [Symbol.toStringTag]: {
+    value: BFRuntimeError.name,
+  },
+  name: {
+    value: BFRuntimeError.name,
+    enumerable: true,
+  },
+});
 
 export { BFRuntimeError };
