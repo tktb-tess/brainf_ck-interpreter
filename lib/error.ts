@@ -4,22 +4,22 @@ interface BFRuntimeError extends Error {
   readonly cause?: unknown;
 }
 
+const _N = 'BFRuntimeError';
+
 class BFRuntimeError extends Error {
-  static override readonly name = 'BFRuntimeError';
+  static override readonly name = _N;
+
+  override get name(): 'BFRuntimeError' {
+    return _N;
+  }
+
+  get [Symbol.toStringTag](): 'BFRuntimeError' {
+    return _N;
+  }
 
   constructor(message: string, cause?: unknown) {
     super(message, { cause });
   }
 }
-
-Object.defineProperties(BFRuntimeError.prototype, {
-  [Symbol.toStringTag]: {
-    value: BFRuntimeError.name,
-  },
-  name: {
-    value: BFRuntimeError.name,
-    enumerable: true,
-  },
-});
 
 export { BFRuntimeError };
